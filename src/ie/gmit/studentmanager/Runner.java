@@ -23,32 +23,32 @@ public class Runner extends Application implements Serializable {
 	// Read more here: https://docs.oracle.com/javase/7/docs/platform/serialization/spec/class.html
 	private static final long serialVersionUID = 1L;
 
+	// Instance Variables
 	StudentManager sm = new StudentManager();
 	Scene scene1;
-	Scene scene2;
+	Scene scene2; // Used for adding Student
 	GridPane gridPane1;
 	VBox vBox1;
 	
 	@Override
 	public void start(Stage primaryStage) {
 
-		Text myText = new Text("Please select a Menu Option below:");
+		Text myText = new Text("Please select an option below:");
 		TextArea myOutput = new TextArea();
 		myOutput.setPrefHeight(100); //sets height of the TextArea to 400 pixels 
 		myOutput.setPrefWidth(100); //sets width of the TextArea to 300 pixels
 		
+		// Create text for Scene 2
 		Text myText2 = new Text("Please Enter All Student details below:");
 		TextArea myOutput2 = new TextArea();
 		myOutput2.setPrefHeight(100); //sets height of the TextArea to 400 pixels 
 		myOutput2.setPrefWidth(100); //sets width of the TextArea to 300 pixels
 		
-		
-		
 		Button buttonLoadDB = new Button("Load DB");
 		TextField tfDBPath = new TextField();
 		tfDBPath.setPromptText("Enter Database Path");
 		buttonLoadDB.setOnAction(e -> {
-			if (tfDBPath.getText().isEmpty()) {
+			if (tfDBPath.getText().trim().equals("")) { // If text field is empty
 				myOutput.setText("Please enter path to DB");
 			} else {
 				sm = sm.loadDB(tfDBPath.getText());
@@ -57,7 +57,7 @@ public class Runner extends Application implements Serializable {
 			}
 		});
 		
-		
+		// Add Student
 		Button buttonAdd = new Button("Add Student");
 		Button addStudentDetailsBtn = new Button("Add Student stuff");
 		Button cancelScene2 = new Button("Cancel");
@@ -70,18 +70,24 @@ public class Runner extends Application implements Serializable {
 		// Setting the scene to Stage
 		buttonAdd.setOnAction(e -> primaryStage.setScene(scene2));
 		addStudentDetailsBtn.setOnAction(e -> {
-			if (!tfStudentID.getText().trim().equals("") &&
-					!tfStudentFirstName.getText().trim().equals("") &&
-					!tfStudentSurname.getText().trim().equals("") ) {
-				sm.add(new Student(tfStudentID.getText(), tfStudentFirstName.getText(), tfStudentSurname.getText()));
-				myOutput.setText("Student " + tfStudentID.getText() + " added");
+			// If any of the Student fields are empty print prompt message
+			if (tfStudentID.getText().trim().equals("") || 
+					tfStudentFirstName.getText().trim().equals("") ||
+					tfStudentSurname.getText().trim().equals("")) { 
+				myOutput2.appendText("Please enter ALL Student details\n");
+			} else {
+				// Create new Student with information in text fields
+				Student student = new Student(tfStudentID.getText(), tfStudentFirstName.getText(), tfStudentSurname.getText());
+				sm.add(student); // Add student to student list
+				// Print success message
+				myOutput.setText("Student " + tfStudentID.getText() +
+						" has been added to the students list");
+				// Clear input fields
 				tfStudentID.clear();
 				tfStudentFirstName.clear();
 				tfStudentSurname.clear();
+				// Return to primary stage
 				primaryStage.setScene(scene1);
-			} else {
-				//myOutput2.setText("Please enter all Student details\n");
-				myOutput2.appendText("Please enter all Student details\n");
 			}
 		});
 		
