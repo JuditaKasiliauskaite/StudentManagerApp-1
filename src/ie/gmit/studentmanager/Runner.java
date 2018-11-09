@@ -18,9 +18,9 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Runner extends Application implements Serializable {
-	/**
-	 * http://c2.com/ppr/wiki/JavaIdioms/AlwaysDeclareSerialVersionUid.html
-	 */
+	// A SerialVersionUID identifies the unique original class version for which
+	// this class is capable of writing streams and from which it can read.
+	// Read more here: https://docs.oracle.com/javase/7/docs/platform/serialization/spec/class.html
 	private static final long serialVersionUID = 1L;
 
 	StudentManager sm = new StudentManager();
