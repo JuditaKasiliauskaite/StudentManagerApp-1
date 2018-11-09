@@ -65,7 +65,7 @@ public class Runner extends Application implements Serializable {
 		
 		// Add Student
 		Button buttonAdd = new Button("Add Student");
-		Button addStudentDetailsBtn = new Button("Add Student stuff");
+		Button addStudentDetailsBtn = new Button("Add Student");
 		Button cancelScene2 = new Button("Cancel");
 		TextField tfStudentFirstName = new TextField();
 		tfStudentFirstName.setPromptText("Enter Student First Name");
@@ -116,9 +116,16 @@ public class Runner extends Application implements Serializable {
 			if (tfStudentDel.getText().trim().equals("")) { // If text field is empty
 				myOutput.setText("Please enter the Student ID you want to delete");
 			} else {
-				sm.delete(tfStudentDel.getText());
-				myOutput.setText("Student " + tfStudentDel.getText() + " deleted");
-				tfStudentDel.clear();
+				boolean deleteStatus;
+				deleteStatus = sm.delete(tfStudentDel.getText());
+				if (deleteStatus == true) {
+					myOutput.setText("Student " + tfStudentDel.getText() + " deleted");
+					tfStudentDel.clear();
+				} else {
+					myOutput.setText("Student " + tfStudentDel.getText() + " not found\n");
+					myOutput.appendText("No student deleted!");
+					tfStudentDel.clear();
+				}
 			}
 		});
 		
@@ -126,7 +133,9 @@ public class Runner extends Application implements Serializable {
 		TextField tfSearchID = new TextField();
 		tfSearchID.setPromptText("Enter Student ID");
 		buttonSearchByID.setOnAction(e -> {
-			if(!tfSearchID.getText().trim().equals("")) {
+			if (tfSearchID.getText().trim().equals("")) {
+				myOutput.setText("Please enter the Student ID you want to search for");
+			} else {
 				Student studentObj = sm.getStudentByID(tfSearchID.getText());
 				if (studentObj != null) {
 					myOutput.setText(studentObj.toString());
@@ -134,8 +143,6 @@ public class Runner extends Application implements Serializable {
 					myOutput.setText("No Student Found with ID " + tfSearchID.getText());
 				}
 				tfSearchID.clear();
-			} else {
-				myOutput.setText("Please enter the Student ID you want to search for");
 			}
 		});
 		
@@ -144,7 +151,9 @@ public class Runner extends Application implements Serializable {
 		TextField tfSearchFirstName = new TextField();
 		tfSearchFirstName.setPromptText("Enter Student First Name");
 		buttonSearchByFirstName.setOnAction(e -> {
-			if(!tfSearchFirstName.getText().trim().equals("")) {
+			if (tfSearchFirstName.getText().trim().equals("")) {
+				myOutput.setText("Please enter the Student First Name you want to search for");
+			} else {
 				List<Student> sameNamesList = sm.getStudentsByFirstName(tfSearchFirstName.getText());
 				if (!(sameNamesList == null)) {
 					System.out.println("Igot here");
@@ -154,9 +163,7 @@ public class Runner extends Application implements Serializable {
 				} else {
 					myOutput.setText("No Studnets found with First name: " + tfSearchFirstName.getText());
 					tfSearchFirstName.clear();
-				}		
-			} else {
-				myOutput.setText("Please enter the Student First Name you want to search for");
+				}
 			}
 		});
 		
