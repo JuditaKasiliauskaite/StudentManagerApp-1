@@ -32,13 +32,13 @@ public class Runner extends Application implements Serializable {
 	
 	@Override
 	public void start(Stage primaryStage) {
-
+		// Text for top of scene 1
 		Text myText = new Text("Please select an option below:");
 		TextArea myOutput = new TextArea();
 		myOutput.setPrefHeight(100); //sets height of the TextArea to 400 pixels 
 		myOutput.setPrefWidth(100); //sets width of the TextArea to 300 pixels
 		
-		// Create text for Scene 2
+		// Text for top of scene 2
 		Text myText2 = new Text("Please Enter All Student details below:");
 		TextArea myOutput2 = new TextArea();
 		myOutput2.setPrefHeight(100); //sets height of the TextArea to 400 pixels 
@@ -129,6 +129,7 @@ public class Runner extends Application implements Serializable {
 			}
 		});
 		
+		// Search by ID
 		Button buttonSearchByID = new Button("Search by ID");
 		TextField tfSearchID = new TextField();
 		tfSearchID.setPromptText("Enter Student ID");
