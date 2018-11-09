@@ -3,8 +3,9 @@ package ie.gmit.studentmanager;
 import java.io.Serializable;
 import java.util.*; // For Date obj
 
-public class Student implements Serializable{
-    private String studentId;
+public class Student implements Serializable {
+	private static final long serialVersionUID = 1L;
+	private String studentId;
     private String firstName;
     private String surname;
     private Date dob;
@@ -13,6 +14,12 @@ public class Student implements Serializable{
     
     public Student(String sid){
         this.studentId = sid;
+    }
+    
+    public Student(String sid, String fname, String sname){
+        this(sid);
+        this.firstName = fname;
+        this.surname = sname;
     }
     
     public Student(String sid, String fname, String sname, Date dob){

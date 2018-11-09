@@ -6,27 +6,19 @@ import java.util.List;
 
 public class StudentManager implements Serializable {
 
+	/**
+	 * http://c2.com/ppr/wiki/JavaIdioms/AlwaysDeclareSerialVersionUid.html
+	 */
+	private static final long serialVersionUID = 1L;
+
 	// Create an ArrayList to hold the student objects
 	List<Student> students;
-	private static final String DB_FILE_NAME = "studentsDB.ser";
 	
 	// Constructor - instantiate students ArrayList
 	public StudentManager() {
 		// Creating an empty students ArrayList that contains 10 nulls
 		students = new ArrayList<Student>();
 	}
-	
-//	public StudentManager(String dbFile) {
-//		// Comment
-//		try {
-//			ObjectInputStream in = new ObjectInputStream(new FileInputStream(dbFile));
-//			in.readObject();
-//    		in.close();
-//    	} catch (Exception e) {
-//    		System.out.print("[Error] Cannont save DB. Cause: ");
-//    		e.printStackTrace();
-//    	}
-//	}
 
 	public boolean add(Student s) {
 		try {
@@ -70,7 +62,7 @@ public class StudentManager implements Serializable {
 		// for Student type elements in the students ArrayList do
 		for (Student student : students) {
 			// If I find a student with the given first name then add to list
-			if (student.getFirstName().equalsIgnoreCase(fname)) {
+			if (!(student.getFirstName() == null) && student.getFirstName().equalsIgnoreCase(fname)) {
 				sameNames.add(student);
 			}
 		}
@@ -88,15 +80,17 @@ public class StudentManager implements Serializable {
 		return students.size();
 	}
 	
-	public void saveDBToFile() {
+    public StudentManager loadDB(String dbPath){
+    	StudentManager sm = null;
     	try {
-    		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(DB_FILE_NAME));
-    		out.writeObject(this);
-    		out.close();
+			ObjectInputStream in = new ObjectInputStream(new FileInputStream(dbPath));
+			sm = (StudentManager) in.readObject();
+    		in.close();
     	} catch (Exception e) {
-    		System.out.print("[Error] Cannont save DB. Cause: ");
+    		System.out.print("[Error] Cannont load DB. Cause: ");
     		e.printStackTrace();
     	}
-	}
-	
+		return sm;
+    }
+    
 }

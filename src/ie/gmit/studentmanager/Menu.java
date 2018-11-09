@@ -58,7 +58,7 @@ public class Menu {
         }else if (userSelection == 6){ //Output total Students
             totalMenu();
         }else if (userSelection == 7){ //Save DB of Students
-            saveDB();
+         //   saveDB();
         }else if (userSelection == 8){ //Quit
         	System.out.println("Student Manager Closing - Goodbye!");
             keepRunning = false;                
@@ -70,16 +70,16 @@ public class Menu {
     private void loadDB(){
     	System.out.println("Enter path to DB>"); 
     	String dbPath = userInput.next();
-    	try {
-			ObjectInputStream in = new ObjectInputStream(new FileInputStream(dbPath));
-			sm = (StudentManager) in.readObject();
-    		in.close();
-    		System.out.print("\nStudents DB loaded successfully!");
-    	} catch (Exception e) {
-    		System.out.print("[Error] Cannont load DB. Cause: ");
-    		e.printStackTrace();
-    	}
-    	
+    	sm.loadDB(dbPath);
+//    	try {
+//			ObjectInputStream in = new ObjectInputStream(new FileInputStream(dbPath));
+//			sm = (StudentManager) in.readObject();
+//    		in.close();
+//    		System.out.print("\nStudents DB loaded successfully!");
+//    	} catch (Exception e) {
+//    		System.out.print("[Error] Cannont load DB. Cause: ");
+//    		e.printStackTrace();
+//    	}
     }
     
     private void addMenu(){
@@ -149,9 +149,9 @@ public class Menu {
         System.out.println("Total number of students = " + totalStudents);
     }
     
-    private void saveDB() {
-    	sm.saveDBToFile();
-    }
+//    private void saveDB() {
+//    	sm.saveDBToFile();
+//    }
     
     // Optional extra to improve user experience
     private void pressEnterKeyToContinue() { 

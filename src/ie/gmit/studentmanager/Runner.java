@@ -1,64 +1,219 @@
 package ie.gmit.studentmanager;
 
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.List;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class Runner extends Application {
+public class Runner extends Application implements Serializable {
+	/**
+	 * http://c2.com/ppr/wiki/JavaIdioms/AlwaysDeclareSerialVersionUid.html
+	 */
+	private static final long serialVersionUID = 1L;
 
+	StudentManager sm = new StudentManager();
+	Scene scene1;
+	Scene scene2;
+	GridPane gridPane1;
+	VBox vBox1;
+	
 	@Override
 	public void start(Stage primaryStage) {
 
 		Text myText = new Text("Please select a Menu Option below:");
-		Button buttonLoadDB = new Button("Load DB");
-		Button buttonAdd = new Button("Add Student");
-		Button buttonDelete = new Button("Delete Student");
-		Button buttonSearchByID = new Button("Search by ID");
-		Button buttonSearchByFirstName = new Button("Search by First Name");
-		Button buttonShowTotal = new Button("Show Total Students");
-		Button buttonSaveDB = new Button("Save DB");
-		Button buttonQuit = new Button("Quit");	
 		TextArea myOutput = new TextArea();
+		myOutput.setPrefHeight(100); //sets height of the TextArea to 400 pixels 
+		myOutput.setPrefWidth(100); //sets width of the TextArea to 300 pixels
+		
+		Text myText2 = new Text("Please Enter All Student details below:");
+		TextArea myOutput2 = new TextArea();
+		myOutput2.setPrefHeight(100); //sets height of the TextArea to 400 pixels 
+		myOutput2.setPrefWidth(100); //sets width of the TextArea to 300 pixels
+		
+		
+		
+		Button buttonLoadDB = new Button("Load DB");
+		TextField tfDBPath = new TextField();
+		tfDBPath.setPromptText("Enter Database Path");
+		buttonLoadDB.setOnAction(e -> {
+			if (tfDBPath.getText().isEmpty()) {
+				myOutput.setText("Please enter path to DB");
+			} else {
+				sm = sm.loadDB(tfDBPath.getText());
+				myOutput.setText("DB loaded successfully from " + tfDBPath.getText());
+				tfDBPath.clear();
+			}
+		});
+		
+		
+		Button buttonAdd = new Button("Add Student");
+		Button addStudentDetailsBtn = new Button("Add Student stuff");
+		Button cancelScene2 = new Button("Cancel");
+		TextField tfStudentFirstName = new TextField();
+		tfStudentFirstName.setPromptText("Enter Student First Name");
+		TextField tfStudentSurname = new TextField();
+		tfStudentSurname.setPromptText("Enter Student Surname");
+		TextField tfStudentID = new TextField();
+		tfStudentID.setPromptText("Enter Student ID");
+		// Setting the scene to Stage
+		buttonAdd.setOnAction(e -> primaryStage.setScene(scene2));
+		addStudentDetailsBtn.setOnAction(e -> {
+			if (!tfStudentID.getText().trim().equals("") &&
+					!tfStudentFirstName.getText().trim().equals("") &&
+					!tfStudentSurname.getText().trim().equals("") ) {
+				sm.add(new Student(tfStudentID.getText(), tfStudentFirstName.getText(), tfStudentSurname.getText()));
+				myOutput.setText("Student " + tfStudentID.getText() + " added");
+				tfStudentID.clear();
+				tfStudentFirstName.clear();
+				tfStudentSurname.clear();
+				primaryStage.setScene(scene1);
+			} else {
+				//myOutput2.setText("Please enter all Student details\n");
+				myOutput2.appendText("Please enter all Student details\n");
+			}
+		});
+		
+		cancelScene2.setOnAction(e -> {
+			tfStudentID.clear();
+			tfStudentFirstName.clear();
+			tfStudentSurname.clear();
+			primaryStage.setScene(scene1);
+		});
+		
+		Button buttonDelete = new Button("Delete Student");
+		TextField tfStudentDel = new TextField();
+		tfStudentDel.setPromptText("Enter Student ID");
+		buttonDelete.setOnAction(e -> {
+			if (!tfStudentDel.getText().trim().equals("")) {
+				sm.delete(tfStudentDel.getText());
+				myOutput.setText("Student " + tfStudentDel.getText()  + " deleted");
+				tfStudentDel.clear();
+			} else {
+				myOutput.setText("Please enter the Student ID you want to delete");
+			}
+		});
+		
+		Button buttonSearchByID = new Button("Search by ID");
+		TextField tfSearchID = new TextField();
+		tfSearchID.setPromptText("Enter Student ID");
+		buttonSearchByID.setOnAction(e -> {
+			if(!tfSearchID.getText().trim().equals("")) {
+				Student studentObj = sm.getStudentByID(tfSearchID.getText());
+				if (studentObj != null) {
+					myOutput.setText(studentObj.toString());
+				} else {
+					myOutput.setText("No Student Found with ID " + tfSearchID.getText());
+				}
+				tfSearchID.clear();
+			} else {
+				myOutput.setText("Please enter the Student ID you want to search for");
+			}
+		});
+		
+		Button buttonSearchByFirstName = new Button("Search by First Name");
+		TextField tfSearchFirstName = new TextField();
+		tfSearchFirstName.setPromptText("Enter Student First Name");
+		buttonSearchByFirstName.setOnAction(e -> {
+			if(!tfSearchFirstName.getText().trim().equals("")) {
+				List<Student> sameNamesList = sm.getStudentsByFirstName(tfSearchFirstName.getText());
+				if (!(sameNamesList == null)) {
+					System.out.println("Igot here");
+					for (Student student : sameNamesList) {
+						myOutput.setText(student.toString());
+					}
+				} else {
+					myOutput.setText("No Studnets found with First name: " + tfSearchFirstName.getText());
+					tfSearchFirstName.clear();
+				}		
+			} else {
+				myOutput.setText("Please enter the Student First Name you want to search for");
+			}
+		});
+		
+		Button buttonShowTotal = new Button("Show Total Students");
+		buttonShowTotal.setOnAction(e -> {
+			myOutput.setText(Integer.toString(sm.findTotalStudents()));
+		});
+		
+		Button buttonSaveDB = new Button("Save DB");
+		buttonSaveDB.setOnAction(e -> {
+			try {
+	    		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("studentsDB.ser"));
+	    		out.writeObject(sm);
+	    		out.close();
+	    	} catch (Exception exception) {
+	    		System.out.print("[Error] Cannont save DB. Cause: ");
+	    		exception.printStackTrace();
+	    	}
+			myOutput.setText("Student Database Saved");
+		});
+		
+		Button buttonQuit = new Button("Quit");	
+		buttonQuit.setOnAction(e -> Platform.exit());
 
-		GridPane myGridPane = new GridPane();
-
+		gridPane1 = new GridPane();
+		vBox1 = new VBox();
+		
 		// Setting the padding
-		myGridPane.setPadding(new Insets(10, 10, 10, 10));
-
+		gridPane1.setPadding(new Insets(10, 10, 10, 10));
+		vBox1.setPadding(new Insets(10, 10, 10, 10));
+		
 		// Setting the vertical and horizontal gaps between the columns
-		myGridPane.setVgap(10);
-		myGridPane.setHgap(10);
-
+		gridPane1.setVgap(10);
+		gridPane1.setHgap(10);
+		
 		// Setting the Grid alignment
-		myGridPane.setAlignment(Pos.CENTER);
+		gridPane1.setAlignment(Pos.CENTER);
+		vBox1.setAlignment(Pos.CENTER);
+		
+		// Arranging all the nodes in the grid
+		gridPane1.add(myText, 0, 0);
+		gridPane1.add(buttonLoadDB, 0, 1);
+		gridPane1.add(tfDBPath, 1, 1);
+		gridPane1.add(buttonAdd, 0, 2);
+		//gridPane1.add(tfStudentID, 1, 2);
+		gridPane1.add(buttonDelete, 0, 3);
+		gridPane1.add(tfStudentDel, 1, 3);
+		gridPane1.add(buttonSearchByID, 0, 4);
+		gridPane1.add(tfSearchID, 1, 4);
+		gridPane1.add(buttonSearchByFirstName, 0, 5);
+		gridPane1.add(tfSearchFirstName, 1, 5);
+		gridPane1.add(buttonShowTotal, 0, 6);
+		gridPane1.add(buttonSaveDB, 0, 7);
+		gridPane1.add(buttonQuit, 0, 8);
+		gridPane1.add(myOutput, 0, 9, 2, 1);
 
 		// Arranging all the nodes in the grid
-		myGridPane.add(myText, 0, 0);
-		myGridPane.add(buttonLoadDB, 0, 1);
-		myGridPane.add(buttonAdd, 0, 2);
-		myGridPane.add(buttonDelete, 0, 3);
-		myGridPane.add(buttonSearchByID, 0, 4);
-		myGridPane.add(buttonSearchByFirstName, 0, 5);
-		myGridPane.add(buttonShowTotal, 0, 6);
-		myGridPane.add(buttonSaveDB, 0, 7);
-		myGridPane.add(buttonQuit, 0, 8);
-		myGridPane.add(myOutput, 0, 9);
+		vBox1.getChildren().addAll(myText2, 
+				tfStudentID, 
+				tfStudentFirstName, 
+				tfStudentSurname, 
+				addStudentDetailsBtn, 
+				cancelScene2,
+				myOutput2);
 
 		/* Preparing the Scene */
 		// Create a Scene by passing the root group object, height and width
-		Scene scene = new Scene(myGridPane, 500, 500);
-
+		scene1 = new Scene(gridPane1, 400, 450);
+		scene2 = new Scene(vBox1, 400, 450);
+		
 		/* Preparing the Stage (i.e. the container of any JavaFX application) */
 		// Setting the title to Stage.
 		primaryStage.setTitle("Student Manager Application");
 		// Setting the scene to Stage
-		primaryStage.setScene(scene);
+		primaryStage.setScene(scene1);
 		// Displaying the stage
 		primaryStage.show();
 	}
