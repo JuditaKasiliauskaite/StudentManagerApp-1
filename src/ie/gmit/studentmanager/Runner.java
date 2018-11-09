@@ -49,11 +49,17 @@ public class Runner extends Application implements Serializable {
 		tfDBPath.setPromptText("Enter Database Path");
 		buttonLoadDB.setOnAction(e -> {
 			if (tfDBPath.getText().trim().equals("")) { // If text field is empty
-				myOutput.setText("Please enter path to DB");
+				myOutput.appendText("Please enter path to DB\n");
 			} else {
 				sm = sm.loadDB(tfDBPath.getText());
-				myOutput.setText("DB loaded successfully from " + tfDBPath.getText());
-				tfDBPath.clear();
+				if (sm == null) {
+					myOutput.setText("ERROR: DB path " + tfDBPath.getText() + " does not exist\n");
+					myOutput.appendText("Please check DB path and try again");
+					tfDBPath.clear();
+				} else {
+					myOutput.setText("DB loaded successfully from " + tfDBPath.getText());
+					tfDBPath.clear();
+				}
 			}
 		});
 		
