@@ -183,11 +183,12 @@ public class Runner extends Application implements Serializable {
 	    		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("studentsDB.ser"));
 	    		out.writeObject(sm);
 	    		out.close();
+	    		myOutput.setText("Student Database Saved");
 	    	} catch (Exception exception) {
 	    		System.out.print("[Error] Cannont save DB. Cause: ");
 	    		exception.printStackTrace();
+	    		myOutput.setText("ERROR: Failed to save Students DB!");
 	    	}
-			myOutput.setText("Student Database Saved");
 		});
 		
 		Button buttonQuit = new Button("Quit");	
