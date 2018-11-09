@@ -92,28 +92,33 @@ public class Runner extends Application implements Serializable {
 				tfStudentID.clear();
 				tfStudentFirstName.clear();
 				tfStudentSurname.clear();
-				// Return to primary stage
+				// Return to scene 1
 				primaryStage.setScene(scene1);
 			}
 		});
 		
+		// Cancel button action for scene 2. If the user decides not to add a 
+		// Student the can go back to the main scene.
 		cancelScene2.setOnAction(e -> {
+			// Clear input fields
 			tfStudentID.clear();
 			tfStudentFirstName.clear();
 			tfStudentSurname.clear();
+			// Return to scene 1
 			primaryStage.setScene(scene1);
 		});
 		
+		// Delete Student
 		Button buttonDelete = new Button("Delete Student");
 		TextField tfStudentDel = new TextField();
 		tfStudentDel.setPromptText("Enter Student ID");
 		buttonDelete.setOnAction(e -> {
-			if (!tfStudentDel.getText().trim().equals("")) {
-				sm.delete(tfStudentDel.getText());
-				myOutput.setText("Student " + tfStudentDel.getText()  + " deleted");
-				tfStudentDel.clear();
-			} else {
+			if (tfStudentDel.getText().trim().equals("")) { // If text field is empty
 				myOutput.setText("Please enter the Student ID you want to delete");
+			} else {
+				sm.delete(tfStudentDel.getText());
+				myOutput.setText("Student " + tfStudentDel.getText() + " deleted");
+				tfStudentDel.clear();
 			}
 		});
 		
@@ -134,6 +139,7 @@ public class Runner extends Application implements Serializable {
 			}
 		});
 		
+		// Search by First Name
 		Button buttonSearchByFirstName = new Button("Search by First Name");
 		TextField tfSearchFirstName = new TextField();
 		tfSearchFirstName.setPromptText("Enter Student First Name");
@@ -154,9 +160,13 @@ public class Runner extends Application implements Serializable {
 			}
 		});
 		
+		// Show total number of students
 		Button buttonShowTotal = new Button("Show Total Students");
+		TextField tfTotalNumberOfStudents = new TextField();
+		tfTotalNumberOfStudents.setEditable(false); // This box is not editable. Only displays result.
+		tfTotalNumberOfStudents.setPromptText("0");
 		buttonShowTotal.setOnAction(e -> {
-			myOutput.setText(Integer.toString(sm.findTotalStudents()));
+			tfTotalNumberOfStudents.setText(Integer.toString(sm.findTotalStudents()));
 		});
 		
 		Button buttonSaveDB = new Button("Save DB");
@@ -203,11 +213,12 @@ public class Runner extends Application implements Serializable {
 		gridPane1.add(buttonSearchByFirstName, 0, 5);
 		gridPane1.add(tfSearchFirstName, 1, 5);
 		gridPane1.add(buttonShowTotal, 0, 6);
+		gridPane1.add(tfTotalNumberOfStudents, 1, 6);
 		gridPane1.add(buttonSaveDB, 0, 7);
 		gridPane1.add(buttonQuit, 0, 8);
 		gridPane1.add(myOutput, 0, 9, 2, 1);
 
-		// Arranging all the nodes in the grid
+		// Arranging all the nodes in a vertical box for scene 2 student add
 		vBox1.getChildren().addAll(myText2, 
 				tfStudentID, 
 				tfStudentFirstName, 
